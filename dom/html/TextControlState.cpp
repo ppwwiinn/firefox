@@ -732,6 +732,11 @@ void TextInputListener::OnSelectionChange(Selection& aSelection,
     return;
   }
 
+  RefPtr<TextControlElement> textControlElement = mTxtCtrlElement;
+  if (!textControlElement) {
+    return;
+  }
+
   // Fire the select event
   // The specs don't exactly say when we should fire the select event.
   // IE: Whenever you add/remove a character to/from the selection. Also
@@ -754,7 +759,7 @@ void TextInputListener::OnSelectionChange(Selection& aSelection,
   if (!collapsed && (aReason & (nsISelectionListener::MOUSEUP_REASON |
                                 nsISelectionListener::KEYPRESS_REASON |
                                 nsISelectionListener::SELECTALL_REASON))) {
-    if (nsCOMPtr<nsIContent> content = mTxtCtrlElement) {
+    if (nsCOMPtr<nsIContent> content = textControlElement) {
       if (auto* frame = content->GetPrimaryFrame()) {
         RefPtr<PresShell> presShell = frame->PresShell();
         nsEventStatus status = nsEventStatus_eIgnore;
@@ -771,7 +776,7 @@ void TextInputListener::OnSelectionChange(Selection& aSelection,
 
   mSelectionWasCollapsed = collapsed;
 
-  if (nsFocusManager::GetFocusedElementStatic() != mTxtCtrlElement) {
+  if (nsFocusManager::GetFocusedElementStatic() != textControlElement) {
     return;
   }
 
